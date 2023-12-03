@@ -18,19 +18,31 @@ const FormSchema = z.object({
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+// This is temporary until @types/react-dom is updated
+// export type State = {
+//   errors?: {
+//     customerId?: string[];
+//     amount?: string[];
+//     status?: string[];
+//   };
+//   message?: string | null;
+// };
+
+// export async function createInvoice(prevState: State, formData: FormData) {
 
 export async function createInvoice(formData: FormData) {
   const validatedFields = CreateInvoice.safeParse(
     Object.fromEntries(formData.entries()),
   );
+  console.log('validatedFields', validatedFields);
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Missing Fields. Failed to Create Invoice.',
-    };
+    throw new Error('Missing Fields. Failed to Create Invoice.');
+    // return {
+    // errors: validatedFields.error.flatten().fieldErrors,
+    // message: 'Missing Fields. Failed to Create Invoice.',
+    // };
   }
-  console.log('validatedFields', validatedFields);
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
