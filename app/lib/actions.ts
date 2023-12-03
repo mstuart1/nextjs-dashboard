@@ -18,6 +18,8 @@ const FormSchema = z.object({
 
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+
+export async function createInvoice(formData: FormData) {
   const validatedFields = CreateInvoice.safeParse(
     Object.fromEntries(formData.entries()),
   );
@@ -32,7 +34,7 @@ const UpdateInvoice = FormSchema.omit({ id: true, date: true });
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
-  // console.log(customerId, amountInCents, status, date);
+
   try {
     await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
