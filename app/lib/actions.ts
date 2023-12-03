@@ -69,7 +69,7 @@ export async function updateInvoice(id: string, formData: FormData) {
 }
 
 export async function deleteInvoice(id: string) {
-  throw new Error('Not implemented');
+  // throw new Error('Not implemented');
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath('/dashboard/invoices');
