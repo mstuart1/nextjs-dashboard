@@ -3,6 +3,9 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
+// import { useFormState } from 'react-dom';
 
 const FormSchema = z.object({
   id: z.string(),
@@ -19,14 +22,14 @@ const FormSchema = z.object({
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 // This is temporary until @types/react-dom is updated
-// export type State = {
-//   errors?: {
-//     customerId?: string[];
-//     amount?: string[];
-//     status?: string[];
-//   };
-//   message?: string | null;
-// };
+export type State = {
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  };
+  message?: string | null;
+};
 
 // export async function createInvoice(prevState: State, formData: FormData) {
 
@@ -88,4 +91,20 @@ export async function deleteInvoice(id: string) {
   } catch (error) {
     console.error(error);
   }
+}
+
+// export async function authenticate (prevState: State, formData: FormData) {
+export async  function authenticate ( formData: FormData) {
+  try{
+    await signIn('credentials', formData)
+    } catch (error) {
+      if (error instanceof AuthError) {
+        switch (error.type) {
+          case 'CredentialsSignin':
+            return 'Invalid credentials'
+            default:
+              return 'Something went wrong'
+        }
+      }
+    }
 }
